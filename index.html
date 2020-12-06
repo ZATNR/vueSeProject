@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body class="container">
+    <h1>Simple Voting DApp</h1>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Candidate</th>
+                    <th>Vote Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Alice</td>
+                    <td id="c-1"></td>
+                </tr>
+                <tr>
+                    <td>Bob</td>
+                    <td id="c-2"></td>
+                </tr>
+                <tr>
+                    <td>Cary</td>
+                    <td id="c-3"></td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="text" id="can"/>
+        <a href="#" id="nbtn" class="btn btn-primary">发布借贷信息</a>
+    </div>
+</body>
+<script src="./jquery-3.1.1.js"></script>
+<script src="./web3.min.js"></script>
+<script src="./test.js"></script>
+<script>
+    
+    var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+var abi = JSON.parse("[{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"infos\",\"outputs\":[{\"name\":\"owner_id\",\"type\":\"string\"},{\"name\":\"owner_name\",\"type\":\"string\"},{\"name\":\"dev_id\",\"type\":\"string\"},{\"name\":\"dev_str\",\"type\":\"string\"},{\"name\":\"isvalid\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"owner_id\",\"type\":\"string\"}],\"name\":\"searchdevid\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"owner_id\",\"type\":\"string\"},{\"name\":\"owner_name\",\"type\":\"string\"},{\"name\":\"dev_id\",\"type\":\"string\"},{\"name\":\"dev_str\",\"type\":\"string\"}],\"name\":\"change\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"name\":\"\",\"type\":\"address\"}],\"name\":\"info_addrs\",\"outputs\":[{\"name\":\"owner_id\",\"type\":\"string\"},{\"name\":\"owner_name\",\"type\":\"string\"},{\"name\":\"dev_id\",\"type\":\"string\"},{\"name\":\"dev_str\",\"type\":\"string\"},{\"name\":\"isvalid\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"owner_id\",\"type\":\"string\"}],\"name\":\"searchdevstr\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"owner_id\",\"type\":\"string\"},{\"name\":\"owner_name\",\"type\":\"string\"},{\"name\":\"dev_id\",\"type\":\"string\"},{\"name\":\"dev_str\",\"type\":\"string\"}],\"name\":\"add\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getlength\",\"outputs\":[{\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"owner_id\",\"type\":\"string\"}],\"name\":\"check\",\"outputs\":[{\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"name\":\"owner_id\",\"type\":\"string\"}],\"name\":\"searchownname\",\"outputs\":[{\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]");
+var contractAddr ='0x6b8a149a11c2322d4c380ee2dfe2fdaeefa7228c';
+var VotingContract = web3.eth.contract(abi);
+var contractInstance = VotingContract.at(contractAddr);
+//var contractInstance=VotingContract.new(["Alice","Bob","Cary"],{data: '0x9b74d4d87edf8c1ba7884ecde6faf790b27787bf'});
+console.log(contractInstance);
+var candidates = {"Alice":"c-1","Bob":"c-2","Cary":"c-3"};
+
+web3.eth.defaultAccount = web3.eth.accounts[0]
+web3.personal.unlockAccount(web3.eth.defaultAccount)
+$(document).ready(function(){
+    //contractInstance.add(10000000,"lao",1,"sdads","dsadad","dsadasd","123456","ddasdasd");
+   
+    // var candidateList = Object.keys(candidates);
+    // alert(candidateList);
+    // for(let i=0;i<candidates.length;i++){
+    //     let name = candidateList[i];
+    //     let count =contractInstance.totalVotesFor(name,{from:web3.eth.accounts[0]}).toString();
+    //     alert(count==0);
+    //     $("#"+candidates[name]).html(count);
+        
+        
+    // }
+    
+});
+
+window.onload = function(){
+
+$("#nbtn").click(function(){
+    // 涉及金额 eth = 10 ^18 wei int256（借贷消息表示借款总金额，库存协调和产能互换表示酬金）
+// 期限 string（库存协调放空）
+// 类型 1表示借贷，2表示库存，3表示产能
+// 不足的物件名：name string（借贷信息默认值为money）
+// 状态量 true 审核通过，false 审核不通过
+// 借贷信息 string
+// 公司名字 string
+// 借贷人ID（公司ID） string
+// place 公司地点 string
+    console.log(contractInstance.add.sendTransaction(10000000,"7days",1,"药品","借衣服","哈药六厂","王进口","上海",{from:web3.eth.accounts[0],gas: 6000000}));
+    console.log(contractInstance.getlength.call());
+    console.log(contractInstance.confirm.call("药品"));
+    //     let candiateName =  $("#can").val();
+    //     console.log(web3.eth.accounts);
+    //     console.log(web3.eth.accounts[0]);
+    //     try {
+    //         contractInstance.vote(candiateName,{from:web3.eth.accounts[0]},(err,res)=>{
+    //             if(err){
+    //                 console.log("Error:",err);
+    //                 alert(err);
+    //             }else{
+    //                 console.log(contractInstance.validateCandidate(candiateName));
+    //                 let id =candidates[candiateName];
+    //                 let count = contractInstance.totalVotesFor(candiateName,{from:web3.eth.accounts[0]}).toString();
+    //                 console.log(count);
+    //                 $("#"+candidates[name]).html(count);
+    //             }
+    //         })
+    //     }catch(err){
+    //         alert(err);
+    //     }
+    }
+  );}
+</script>
+</html>
